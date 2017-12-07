@@ -1,7 +1,9 @@
 package com.gilt.gfc.aws.cloudwatch
 
-import com.amazonaws.services.cloudwatch.{AmazonCloudWatchClient, AmazonCloudWatchClientBuilder}
-import com.amazonaws.services.cloudwatch.model.{MetricDatum, PutMetricDataRequest}
+import software.amazon.awssdk.services.cloudwatch.CloudWatchAsyncClient
+import software.amazon.awssdk.services.cloudwatch.model.{MetricDatum, PutMetricDataRequest}
+// import com.amazonaws.services.cloudwatch.{AmazonCloudWatchClient, AmazonCloudWatchClientBuilder}
+// import com.amazonaws.services.cloudwatch.model.{MetricDatum, PutMetricDataRequest}
 import com.gilt.gfc.concurrent.JavaConverters._
 import com.gilt.gfc.concurrent.{ExecutorService, SameThreadExecutionContext}
 import com.gilt.gfc.logging.OpenLoggable
@@ -137,7 +139,7 @@ object CloudWatchMetricsClientImpl {
   val Logger = new OpenLoggable {}
 
   private
-  val awsClient = AmazonCloudWatchClientBuilder.defaultClient()
+  val awsClient = CloudWatchAsyncClient.builder.build
 
 
   private
@@ -173,9 +175,10 @@ case class CloudWatchMetricsClientImpl (
                       ): Unit = executor.execute {
     try {
       awsClient.putMetricData(
-        new PutMetricDataRequest().
-          withNamespace(namespace).
-          withMetricData(tcwmdEv.toMetricData(a).asJava)
+        PutMetricDataRequest.builder
+            .namespace(namespace)
+            .metricData(tcwmdEv.toMetricData(a).asJava)
+            .build
       )
     } catch {
       case NonFatal(e) =>

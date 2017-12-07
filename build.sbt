@@ -6,23 +6,24 @@ organization := "com.gilt"
 
 scalaVersion := "2.12.4"
 
-crossScalaVersions := Seq(scalaVersion.value, "2.11.12")
+crossScalaVersions := Seq(scalaVersion.value)
 
-val awsLibVersion = "1.11.243"
+val awsLibVersion = "2.0.0-preview-6"
 
-scalacOptions += "-target:jvm-1.7"
+scalacOptions += "-target:jvm-1.8"
 
-javacOptions ++= Seq("-source", "1.7", "-target", "1.7")
+javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
 
 ScoverageKeys.coverageFailOnMinimum := true
 
 ScoverageKeys.coverageMinimum := 11.5
 
 libraryDependencies ++= Seq(
+  "org.scala-lang.modules" %% "scala-java8-compat" % "0.8.0",
   "com.gilt" %% "gfc-logging" % "0.0.8"
 , "com.gilt" %% "gfc-concurrent" % "0.3.7"
-, "com.amazonaws" % "aws-java-sdk-cloudwatch" % awsLibVersion
-, "com.amazonaws" % "aws-java-sdk-logs" % awsLibVersion
+, "software.amazon.awssdk" % "cloudwatch" % awsLibVersion
+, "software.amazon.awssdk" % "logs" % awsLibVersion
 , "org.specs2" %% "specs2-scalacheck" % "4.0.2" % Test
 )
 

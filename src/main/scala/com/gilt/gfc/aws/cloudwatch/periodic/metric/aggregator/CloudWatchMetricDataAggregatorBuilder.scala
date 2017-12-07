@@ -4,7 +4,7 @@ package com.gilt.gfc.aws.cloudwatch.periodic.metric.aggregator
 import java.util.concurrent.{ScheduledFuture, TimeUnit}
 import java.util.concurrent.atomic.AtomicReference
 
-import com.amazonaws.services.cloudwatch.model._
+import software.amazon.awssdk.services.cloudwatch.model.{StandardUnit, Dimension}
 import com.gilt.gfc.aws.cloudwatch.CloudWatchMetricsClient
 import com.gilt.gfc.aws.cloudwatch.periodic.metric.CloudWatchMetricDataAggregator
 import com.gilt.gfc.concurrent.JavaConverters._
@@ -24,7 +24,7 @@ import scala.util.control.NonFatal
 case class CloudWatchMetricDataAggregatorBuilder private[metric] (
   metricName: Option[String] = None
 , metricNamespace: Option[String] = None
-, metricUnit: StandardUnit = StandardUnit.None
+, metricUnit: StandardUnit = StandardUnit.NONE
 , metricDimensions: Seq[Seq[Dimension]] = Seq.empty
 , interval: FiniteDuration = 1 minute
 ) extends Loggable {
@@ -112,7 +112,7 @@ case class CloudWatchMetricDataAggregatorBuilder private[metric] (
     val name = sanitizedName.getOrElse(throw new RuntimeException("Please call withMetricName() to give metric a name!"))
 
     def sanitizeDimensions(dims: Seq[Dimension]): Seq[Dimension] = dims.map { dim =>
-      new Dimension().withName(dim.getName.limit(n = DimNameMaxStrLen)).withValue(dim.getValue.limit(allowedCharsRx = DimValueAllowedChars))
+      Dimension.builder.name(dim.name.limit(n = DimNameMaxStrLen)).value(dim.value.limit(allowedCharsRx = DimValueAllowedChars)).build
     }
 
     implicit
