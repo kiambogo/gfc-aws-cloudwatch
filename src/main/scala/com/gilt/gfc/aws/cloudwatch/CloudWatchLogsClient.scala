@@ -177,7 +177,7 @@ object CloudWatchLogsClientImpl {
   val Logger = new OpenLoggable {}
 
   private
-  val awsClient = CloudWatchLogsAsyncClient.builder.build
+  val awsClient = CloudWatchLogsAsyncClient.create
 
 
   private

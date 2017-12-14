@@ -2,8 +2,6 @@ package com.gilt.gfc.aws.cloudwatch
 
 import software.amazon.awssdk.services.cloudwatch.CloudWatchAsyncClient
 import software.amazon.awssdk.services.cloudwatch.model.{MetricDatum, PutMetricDataRequest}
-// import com.amazonaws.services.cloudwatch.{AmazonCloudWatchClient, AmazonCloudWatchClientBuilder}
-// import com.amazonaws.services.cloudwatch.model.{MetricDatum, PutMetricDataRequest}
 import com.gilt.gfc.concurrent.JavaConverters._
 import com.gilt.gfc.concurrent.{ExecutorService, SameThreadExecutionContext}
 import com.gilt.gfc.logging.OpenLoggable
@@ -139,7 +137,7 @@ object CloudWatchMetricsClientImpl {
   val Logger = new OpenLoggable {}
 
   private
-  val awsClient = CloudWatchAsyncClient.builder.build
+  val awsClient = CloudWatchAsyncClient.create
 
 
   private
