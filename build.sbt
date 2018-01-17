@@ -8,6 +8,7 @@ scalaVersion := "2.12.4"
 
 crossScalaVersions := Seq(scalaVersion.value)
 
+
 val awsLibVersion = "2.0.0-preview-7"
 
 scalacOptions += "-target:jvm-1.8"
