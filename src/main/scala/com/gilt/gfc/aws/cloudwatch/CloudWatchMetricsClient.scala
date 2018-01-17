@@ -7,7 +7,7 @@ import com.gilt.gfc.concurrent.{ExecutorService, SameThreadExecutionContext}
 import com.gilt.gfc.logging.OpenLoggable
 
 import scala.collection.JavaConverters._
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
 
@@ -151,6 +151,9 @@ object CloudWatchMetricsClientImpl {
       new LinkedBlockingQueue[Runnable]()
     )
   }.asScala
+
+  private
+  implicit val executionContext = ExecutionContext.fromExecutor(executor)
 }
 
 
@@ -160,6 +163,7 @@ case class CloudWatchMetricsClientImpl (
 ) extends CloudWatchMetricsClient {
 
   import CloudWatchMetricsClientImpl._
+  import scala.compat.java8.FutureConverters._
 
   override
   def enterNamespace( n: String
@@ -170,20 +174,16 @@ case class CloudWatchMetricsClientImpl (
   override
   def putMetricData[A]( a: A
                       )( implicit tcwmdEv: ToCloudWatchMetricsData[A]
-                      ): Unit = executor.execute {
-    try {
-      awsClient.putMetricData(
-        PutMetricDataRequest.builder
-            .namespace(namespace)
-            .metricData(tcwmdEv.toMetricData(a).asJava)
-            .build
-      )
-    } catch {
+                      ): Unit = {
+    awsClient.putMetricData(
+      PutMetricDataRequest.builder
+        .namespace(namespace)
+        .metricData(tcwmdEv.toMetricData(a).asJava)
+        .build
+    ).toScala.recover {
       case NonFatal(e) =>
         Logger.error(e.getMessage, e)
     }
-
-    ()
   }
 }
 
